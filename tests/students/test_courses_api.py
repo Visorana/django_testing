@@ -28,10 +28,10 @@ def student_factory():
 @pytest.mark.django_db
 def test_get_course(client, course_factory):
     course = course_factory(_quantity=1)
-    response = client.get('/api/v1/courses/')
+    response = client.get(f'/api/v1/courses/{course[0].id}/')
     data = response.json()
     assert response.status_code == 200
-    assert model_to_dict(course[0]) == data[-1]
+    assert model_to_dict(course[0]) == data
 
 
 @pytest.mark.django_db
@@ -47,7 +47,7 @@ def test_get_list_courses(client, course_factory):
 @pytest.mark.django_db
 def test_filter_courses_id(client, course_factory):
     courses = course_factory(_quantity=10)
-    response = client.get(f'/api/v1/courses/?id={model_to_dict(courses[0])["id"]}')
+    response = client.get(f'/api/v1/courses/?id={courses[0].id}')
     data = response.json()
     assert response.status_code == 200
     assert data[0] == model_to_dict(courses[0])
@@ -56,7 +56,7 @@ def test_filter_courses_id(client, course_factory):
 @pytest.mark.django_db
 def test_filter_courses_name(client, course_factory):
     course = course_factory(_quantity=1)
-    response = client.get(f'/api/v1/courses/?name={model_to_dict(course[0])["name"]}')
+    response = client.get(f'/api/v1/courses/?name={course[0].name}')
     data = response.json()
     assert response.status_code == 200
     assert data[0] == model_to_dict(course[0])
@@ -71,14 +71,14 @@ def test_create_course(client):
 @pytest.mark.django_db
 def test_patch_course(client, course_factory):
     course = course_factory(_quantity=1)
-    response = client.patch(f'/api/v1/courses/{model_to_dict(course[0])["id"]}/', data={'name': 'Python'})
+    response = client.patch(f'/api/v1/courses/{course[0].id}/', data={'name': 'Python'})
     assert response.status_code == 200
 
 
 @pytest.mark.django_db
 def test_delete_course(client, course_factory):
     course = course_factory(_quantity=1)
-    response = client.delete(f'/api/v1/courses/{model_to_dict(course[0])["id"]}/')
+    response = client.delete(f'/api/v1/courses/{course[0].id}/')
     assert response.status_code == 204
 
 
